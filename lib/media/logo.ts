@@ -1,0 +1,1 @@
+export const logo = 'data:image/webp;base64,UklGRuQkAABXRUJQVlA4WAoAAAAQAAA...';
