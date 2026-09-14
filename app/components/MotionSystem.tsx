@@ -15,7 +15,6 @@ export default function MotionSystem(){
     const updateReduced=()=>root.classList.toggle('reduced-motion',reduced.matches)
     updateReduced(); reduced.addEventListener?.('change',updateReduced)
 
-    // Upgrade the existing markup into one consistent motion system.
     document.querySelectorAll<HTMLElement>('.reveal,.section-head,.photo,.service,.standard-item,.review-card,.value-grid>div,.final-cta,.system,.feature-image').forEach(el=>{
       if(!el.dataset.reveal) el.dataset.reveal=''
     })
@@ -23,14 +22,19 @@ export default function MotionSystem(){
     document.querySelectorAll<HTMLElement>('.primary,.quote-pill,.secondary,.feature-copy a,.review-card a,.service button').forEach(el=>el.dataset.magnetic='')
     document.querySelectorAll<HTMLElement>('.hero-img,.feature-image img').forEach(el=>{el.dataset.parallax=el.classList.contains('hero-img')?'0.025':'0.018'})
 
-    const observer='IntersectionObserver' in window ? new IntersectionObserver(entries=>entries.forEach(entry=>{
-      if(entry.isIntersecting){(entry.target as HTMLElement).classList.add('is-visible');observer?.unobserve(entry.target)}
-    }),{threshold:.12,rootMargin:'0px 0px -45px'}) : null
+    let observer:IntersectionObserver|null=null
+    if('IntersectionObserver' in window){
+      observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          ;(entry.target as HTMLElement).classList.add('is-visible')
+          observer?.unobserve(entry.target)
+        }
+      }),{threshold:.12,rootMargin:'0px 0px -45px'})
+    }
     const observerTargets=document.querySelectorAll<HTMLElement>('[data-reveal]')
     observerTargets.forEach(el=>observer?.observe(el))
     if(!observer) observerTargets.forEach(el=>el.classList.add('is-visible'))
 
-    // Accessible FAQ state while retaining native details/summary behavior.
     document.querySelectorAll<HTMLElement>('.faq details').forEach((detail,i)=>{
       const summary=detail.querySelector('summary'); const panel=detail.querySelector('p')
       if(!summary||!panel)return
