@@ -1,1 +1,1 @@
-{"scripts":{"postinstall":"node -e \"require('https').get('https://raw.githubusercontent.com/daksh-07/Yadify/main/index.html',r=>{let d='';r.on('data',c=>d+=c);r.on('end',()=>require('fs').writeFileSync('index.html',d))})\"","build":"node -e \"console.log('Yardify static build ready')\""},"dependencies":{}}
+{"name":"yardify-demo","private":true,"version":"1.0.0","scripts":{"build":"echo Yardify static build ready"}}
