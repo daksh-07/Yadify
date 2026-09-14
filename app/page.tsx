@@ -1,64 +1,50 @@
-import Link from 'next/link';
+'use client'
+
+import { useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
 
 const photos = [
-  {pos:'0% 0%', label:'Completed landscape'},
-  {pos:'100% 0%', label:'Pathway transformation'},
-  {pos:'0% 50%', label:'Front garden'},
-  {pos:'100% 50%', label:'Stepping-stone pathway'},
-  {pos:'0% 100%', label:'Pool landscape'},
-  {pos:'100% 100%', label:'Retaining wall'},
-];
+  ['0% 0%','Completed landscape'],['100% 0%','Pathway transformation'],['0% 50%','Front garden'],
+  ['100% 50%','Stepping-stone pathway'],['0% 100%','Pool landscape'],['100% 100%','Retaining work']
+]
+const services = [
+  ['01','RETAINING WALLS','Practical retaining solutions that define levels and make outdoor areas more usable.'],
+  ['02','TURF & LAWN','Clean lawn areas and considered planting for a finished outdoor space.'],
+  ['03','DECKING','Outdoor living spaces designed around the home and project scope.'],
+  ['04','OUTDOOR UPGRADES','Thoughtful improvements that bring existing outdoor areas together.']
+]
+const Arrow=()=> <span aria-hidden>↗</span>
 
 export default function Home(){
-  return <>
-    <header className="nav">
-      <div className="wrap navIn">
-        <a className="brand" href="#top"><img src="/images/yardify-logo.webp" alt="Yardify Landscaping Construction" /></a>
-        <nav className="links"><a href="#services">Services</a><a href="#work">Our Work</a><a href="#process">Process</a><a href="#about">About</a></nav>
-        <Link className="btn dark" href="#quote">Get a free quote</Link>
-      </div>
-    </header>
-
-    <main id="top">
-      <section className="hero">
-        <div className="heroImage" />
-        <div className="heroOverlay" />
-        <div className="wrap heroIn">
-          <p className="eyebrow">Yardify Landscaping & Construction · Sydney</p>
-          <h1 className="serif">OUTDOOR SPACES <i>BUILT TO BE LIVED IN.</i></h1>
-          <p className="lead">Landscaping and outdoor construction for Sydney homes — from retaining walls and turf to pathways, gardens and outdoor upgrades.</p>
-          <div className="actions"><Link className="btn lime" href="#quote">Get my free quote</Link><a className="btn outline" href="#work">View our work</a></div>
-        </div>
-      </section>
-
-      <section className="section" id="services"><div className="wrap">
-        <p className="eyebrow light">Services</p><h2 className="serif bigTitle">Practical work. <i>Clean finish.</i></h2>
-        <p className="muted intro">Yardify Landscaping & Construction provides tailored outdoor solutions for homes and businesses.</p>
-        <div className="grid4">{[['01','Retaining Walls','Create usable levels and define outdoor spaces with practical retaining solutions.'],['02','Decking','Extend the way you use your home with a considered outdoor living space.'],['03','Turf & Lawn','A cleaner, greener finish for outdoor areas that need to work hard.'],['04','Outdoor Upgrades','Improve an existing outdoor area with practical landscaping upgrades.']].map(([n,t,d])=><article className="card" key={n}><span className="num">{n}</span><h3>{t}</h3><p className="muted">{d}</p></article>)}</div>
-      </div></section>
-
-      <section className="work" id="work"><div className="wrap section">
-        <p className="eyebrow light">Our Work</p><h2 className="serif bigTitle">Real outdoor spaces. <i>Real results.</i></h2>
-        <div className="gallery">{photos.map((p,i)=><div className={"photo "+(i===0?'featured':'')} key={p.label} style={{backgroundImage:"url('/images/yardify-portfolio.webp')",backgroundPosition:p.pos}}><span>{p.label}</span></div>)}</div>
-      </div></section>
-
-      <section className="section" id="about"><div className="wrap standard">
-        <div><p className="eyebrow light">The Yardify Standard</p><h2 className="serif bigTitle">A straightforward approach to outdoor work.</h2></div>
-        <div className="points">{['Clean work','Proficient','Customer Satisfaction','Tailored Solutions'].map((x,i)=><div className="point" key={x}><span className="num">0{i+1}</span><h3>{x}</h3><p className="muted">Focused on a considered, practical result for the property and project scope.</p></div>)}</div>
-      </div></section>
-
-      <section className="review"><div className="quote"><p className="eyebrow light">Verified Feedback</p><blockquote>“Responsive with messages … really reliable … work was done with care and left the area clean.”</blockquote><p className="muted">Verified customer · hipages</p></div></section>
-
-      <section className="section" id="process"><div className="wrap">
-        <p className="eyebrow light">Process</p><h2 className="serif bigTitle">From first enquiry to finished space.</h2>
-        <div className="process">{[['01','Enquire','Tell us about your suburb, service and project.'],['02','Review','We assess the project brief and available details.'],['03','Build','Move from project scope into the appropriate next step.']].map(([n,t,d])=><div className="step" key={n}><span className="num">{n}</span><h3>{t}</h3><p className="muted">{d}</p></div>)}</div>
-      </div></section>
-
-      <section className="cta" id="quote"><div className="wrap ctaIn">
-        <p className="eyebrow">Start Your Project</p><h2 className="serif">Tell us about the space.</h2><p className="ctaLead">Send a project enquiry and Yardify can review the details with you.</p>
-        <form className="form" action="mailto:yardify@example.com" method="post" encType="text/plain"><input className="field" required name="Name" placeholder="Full name"/><input className="field" required name="Phone" placeholder="Mobile number"/><input className="field" name="Suburb" placeholder="Suburb"/><input className="field" name="Service" placeholder="Service required"/><textarea className="field area" name="Project" placeholder="Tell us about your project"/><button className="btn lime" type="submit">Send project enquiry</button></form>
-      </div></section>
-    </main>
-    <footer><img src="/images/yardify-logo.webp" alt="" /> YARDIFY LANDSCAPING & CONSTRUCTION · SYDNEY</footer>
-  </>
+ const [menu,setMenu]=useState(false),[quote,setQuote]=useState(false),[lightbox,setLightbox]=useState<number|null>(null),[filter,setFilter]=useState('ALL')
+ const cats=['ALL','LANDSCAPING','RETAINING WALLS','TURF','PAVING']
+ useEffect(()=>{document.body.style.overflow=quote||lightbox!==null?'hidden':'';return()=>{document.body.style.overflow=''}},[quote,lightbox])
+ useEffect(()=>{const f=(e:KeyboardEvent)=>{if(lightbox===null)return;if(e.key==='Escape')setLightbox(null);if(e.key==='ArrowRight')setLightbox((lightbox+1)%photos.length);if(e.key==='ArrowLeft')setLightbox((lightbox-1+photos.length)%photos.length)};addEventListener('keydown',f);return()=>removeEventListener('keydown',f)},[lightbox])
+ const shown=useMemo(()=>filter==='ALL'?photos:photos.filter((_,i)=>filter==='PAVING'?[1,3].includes(i):filter==='RETAINING WALLS'?[5].includes(i):filter==='TURF'?[2].includes(i):[0,4].includes(i)),[filter])
+ return <>
+  <div className="scroll-progress"/>
+  <header className="nav"><div className="nav-inner"><Link href="#top" className="brand"><img src="/images/yardify-logo.webp" alt="Yardify Landscaping Construction"/></Link><nav className={menu?'open':''}><a href="#work" onClick={()=>setMenu(false)}>OUR WORK</a><a href="#services" onClick={()=>setMenu(false)}>SERVICES</a><a href="#about" onClick={()=>setMenu(false)}>ABOUT</a><a href="#reviews" onClick={()=>setMenu(false)}>REVIEWS</a><a href="#faq" onClick={()=>setMenu(false)}>FAQ</a></nav><button className="quote-pill" onClick={()=>setQuote(true)}>GET MY FREE QUOTE <Arrow/></button><button className="hamb" onClick={()=>setMenu(!menu)} aria-label="Menu"><i/><i/></button></div></header>
+  <main id="top">
+   <section className="hero"><Image src="/images/yardify-hero.webp" alt="Yardify landscaping project" fill preload sizes="100vw" className="hero-img"/><div className="hero-shade"/><div className="hero-content reveal"><p className="eyebrow">YARDIFY · LANDSCAPING & CONSTRUCTION · SYDNEY</p><h1>OUTDOOR SPACES <em>BUILT TO BE LIVED IN.</em></h1><p>Landscaping and outdoor construction for Sydney homes — from retaining walls and turf to decking and outdoor upgrades.</p><div className="hero-actions"><button className="primary" onClick={()=>setQuote(true)}>GET MY FREE QUOTE <Arrow/></button><a className="secondary" href="#work">VIEW OUR WORK <Arrow/></a></div></div><div className="hero-tag">REAL YARDIFY PROJECTS · SYDNEY</div></section>
+   <section className="statement reveal"><span>01 / REAL PROJECTS</span><h2>Spaces built to be lived in.</h2><p>Real Yardify photography, presented with a cleaner, more considered digital experience.</p></section>
+   <section id="work" className="section work"><div className="section-head"><div><span className="eyebrow">OUR WORK</span><h2>Built to make the outdoors better.</h2></div><span>REAL PROJECTS</span></div><div className="filters">{cats.map(x=><button className={filter===x?'active':''} key={x} onClick={()=>setFilter(x)}>{x}</button>)}</div><div className="masonry">{shown.map((p,i)=><button className={'photo '+(i===0?'large':'')} key={p[1]} onClick={()=>setLightbox(photos.indexOf(p))} aria-label={'Open '+p[1]}><span className="photo-bg" style={{backgroundImage:"url('/images/yardify-portfolio.webp')",backgroundPosition:p[0]}}/><b>{p[1]}</b></button>)}</div></section>
+   <section className="feature"><div className="feature-image"><Image src="/images/yardify-portfolio.webp" alt="Yardify completed landscaping work" fill sizes="100vw"/></div><div className="feature-copy reveal"><span className="eyebrow">FEATURED WORK</span><h2>Real photographs. Stronger presentation.</h2><p>The website should make the work do the selling — with movement, depth and a clear path to enquiry.</p><a href="#work">EXPLORE THE WORK <Arrow/></a></div></section>
+   <section id="services" className="section services"><div className="section-head"><div><span className="eyebrow">SERVICES</span><h2>Practical work. <em>Clean finish.</em></h2></div><span>FOCUSED ON THE WORK THAT MATTERS</span></div><div className="service-grid">{services.map(([n,t,d])=><article className="service reveal" key={n}><span>{n}</span><h3>{t}</h3><p>{d}</p><button onClick={()=>setQuote(true)}>GET A FREE QUOTE <Arrow/></button></article>)}</div></section>
+   <section id="about" className="standard"><div><span className="eyebrow">THE YARDIFY STANDARD</span><h2>Clear thinking. Careful work. A finished space that feels right.</h2></div><div className="standard-grid">{[['QUALITY','Thoughtful outdoor spaces designed around the property.'],['CRAFT','Attention to detail through preparation and finishing.'],['COMMUNICATION','Clear communication throughout the project.'],['RESULTS','Outdoor spaces designed to be enjoyed.']].map(([a,b],i)=><div className="standard-item reveal" key={a}><span>0{i+1}</span><h3>{a}</h3><p>{b}</p></div>)}</div></section>
+   <section id="reviews" className="reviews"><span className="eyebrow">REVIEWS</span><h2>Don't just take our word for it.</h2><div className="review-card"><b>G</b><div><strong>VIEW YARDIFY'S GOOGLE REVIEWS</strong><p>Open the Google Business Profile to see the current public reviews.</p><a href="https://maps.app.goo.gl/aM5JCucJ81qXCbGp8?g_st=ic" target="_blank" rel="noreferrer">VIEW GOOGLE REVIEWS <Arrow/></a></div></div></section>
+   <section className="system"><span className="eyebrow">MORE THAN A WEBSITE</span><h2>Every enquiry has somewhere to go.</h2><p>Turn the website into the front door of a lead-handling system.</p><div className="flow">{['CUSTOMER','REQUESTS A QUOTE','LEAD CAPTURED','LEAD QUALIFIED','YARDIFY NOTIFIED','INSTANT RESPONSE','FOLLOW-UP IF NEEDED'].map((x,i)=><div key={x}><small>{String(i+1).padStart(2,'0')}</small>{x}{i<6&&<b>↓</b>}</div>)}</div></section>
+   <section className="value section"><span className="eyebrow">BUSINESS VALUE</span><h2>Turn more enquiries into conversations.</h2><div className="value-grid">{[['CAPTURE','Every quote request is captured in one place.'],['QUALIFY','See which enquiries need attention first.'],['FOLLOW UP','Follow up with customers who have not responded.']].map(([a,b],i)=><div className="reveal" key={a}><span>0{i+1}</span><h3>{a}</h3><p>{b}</p></div>)}</div></section>
+   <section id="faq" className="faq section"><span className="eyebrow">FAQ</span><h2>Questions, answered.</h2>{[['What landscaping services does Yardify offer?','Yardify publicly lists retaining walls, turf and lawn, decking and outdoor landscaping upgrades.'],['How much does landscaping cost?','Project cost depends on the property, scope and materials. The quote flow collects the details needed to discuss the project.'],['How long does a project take?','Timelines vary with the size and complexity of the work.']].map(([q,a])=><details key={q}><summary>{q}</summary><p>{a}</p></details>)}</section>
+   <section className="final-cta"><span className="eyebrow">START YOUR PROJECT</span><h2>Tell us about the space.</h2><p>Use the project quote flow instead of a basic contact form.</p><button className="primary" onClick={()=>setQuote(true)}>GET MY FREE QUOTE <Arrow/></button></section>
+  </main>
+  <footer><img src="/images/yardify-logo.webp" alt="Yardify"/><div><a href="/yardify/dashboard">DEMO DASHBOARD</a><a href="/yardify/automation">AUTOMATION</a><a href="#work">OUR WORK</a><a href="#services">SERVICES</a></div><small>YARDIFY LANDSCAPING & CONSTRUCTION · SYDNEY · DEMO EXPERIENCE BY EVEREST MARKETING</small></footer>
+  {quote&&<QuoteModal close={()=>setQuote(false)}/>} {lightbox!==null&&<Lightbox index={lightbox} close={()=>setLightbox(null)}/>} 
+ </>
 }
+
+function QuoteModal({close}:{close:()=>void}){const [step,setStep]=useState(1),[busy,setBusy]=useState(false),[done,setDone]=useState(false),[data,setData]=useState({suburb:'',service:'',project:'',timeline:'',budget:'',name:'',phone:'',email:'',photos:[] as File[]});const set=(k:string,v:any)=>setData(d=>({...d,[k]:v}));const valid=step===1?!!data.suburb:step===2?!!data.service:step===3?!!data.project:step===4?!!data.timeline:step===5?!!data.budget:step===7?!!data.name&&!!data.phone&&!!data.email:true;const submit=async()=>{setBusy(true);try{const f=new FormData();Object.entries(data).forEach(([k,v])=>{if(k!=='photos')f.append(k,String(v))});data.photos.forEach(x=>f.append('photos',x));const r=await fetch('/api/leads',{method:'POST',body:f});const j=await r.json();if(r.ok){const lead={...data,score:j.leadScore,label:j.label,status:'NEW',createdAt:j.createdAt,photos:[]};const old=JSON.parse(localStorage.getItem('yardify-demo-leads')||'[]');localStorage.setItem('yardify-demo-leads',JSON.stringify([lead,...old].slice(0,50)))} }catch{}setBusy(false);setDone(true)};if(done)return <div className="modal"><div className="modal-card success"><button className="close" onClick={close}>×</button><span className="success-icon">✓</span><span className="eyebrow">DEMO / SIMULATED</span><h2>Thanks — we've got your project.</h2><p>Your enquiry is captured and scored in the demo. No real SMS or email was sent.</p><div className="timeline"><span>✓ LEAD RECEIVED</span><span>✓ LEAD QUALIFIED</span><span>✓ INSTANT RESPONSE · SIMULATED</span><span>✓ FOLLOW-UP READY</span></div><button className="primary" onClick={close}>BACK TO YARDIFY <Arrow/></button></div></div>;return <div className="modal"><div className="modal-card"><button className="close" onClick={close}>×</button><div className="form-top"><span className="eyebrow">PROJECT ENQUIRY</span><b>STEP {step} OF 8</b></div><div className="progress"><i style={{width:`${step*12.5}%`}}/></div>{step===1&&<Field title="Where is your project?" label="SUBURB" value={data.suburb} set={v=>set('suburb',v)} placeholder="e.g. Schofields"/>}{step===2&&<Choice title="What are you looking for?" options={['LANDSCAPING','RETAINING WALLS','TURF & LAWN','DECKING','PAVING','OUTDOOR UPGRADE','OTHER']} value={data.service} set={v=>set('service',v)}/>} {step===3&&<Field title="Tell us about your project" label="PROJECT DETAILS" value={data.project} set={v=>set('project',v)} placeholder="What would you like to change or build?" area/>}{step===4&&<Choice title="When are you looking to start?" options={['AS SOON AS POSSIBLE','THIS MONTH','1–3 MONTHS','PLANNING AHEAD']} value={data.timeline} set={v=>set('timeline',v)}/>} {step===5&&<Choice title="What's your approximate budget?" options={['UNDER $5K','$5K–$10K','$10K–$20K','$20K+','NOT SURE']} value={data.budget} set={v=>set('budget',v)}/>} {step===6&&<Upload files={data.photos} set={v=>set('photos',v)}/>} {step===7&&<div className="step-body"><h2>Your details</h2><Field label="NAME" value={data.name} set={v=>set('name',v)} placeholder="Full name"/><Field label="PHONE" value={data.phone} set={v=>set('phone',v)} placeholder="Mobile number"/><Field label="EMAIL" value={data.email} set={v=>set('email',v)} placeholder="Email address"/></div>} {step===8&&<div className="step-body"><h2>Review your request</h2><div className="summary">{[['SUBURB',data.suburb],['SERVICE',data.service],['TIMELINE',data.timeline],['BUDGET',data.budget],['NAME',data.name],['PHONE',data.phone],['EMAIL',data.email]].map(x=><div key={x[0]}><span>{x[0]}</span><b>{x[1]||'—'}</b></div>)}<div><span>PHOTOS</span><b>{data.photos.length} attached</b></div></div></div>}<div className="form-actions">{step>1&&<button className="back" onClick={()=>setStep(step-1)}>BACK</button>}{step<8?<button className="primary" disabled={!valid} onClick={()=>setStep(step+1)}>NEXT <Arrow/></button>:<button className="primary" disabled={busy} onClick={submit}>{busy?'SENDING…':'GET MY FREE QUOTE →'}</button>}</div></div></div>}
+function Field({title,label,value,set,placeholder,area}:{title?:string,label:string,value:string,set:(v:string)=>void,placeholder:string,area?:boolean}){return <div className="field-wrap">{title&&<h2>{title}</h2>}<label>{label}{area?<textarea value={value} onChange={e=>set(e.target.value)} placeholder={placeholder}/>:<input value={value} onChange={e=>set(e.target.value)} placeholder={placeholder}/>}</label></div>}
+function Choice({title,options,value,set}:{title:string,options:string[],value:string,set:(v:string)=>void}){return <div className="step-body"><h2>{title}</h2><div className="choices">{options.map(x=><button key={x} className={value===x?'selected':''} onClick={()=>set(x)}>{x}<span>+</span></button>)}</div></div>}
+function Upload({files,set}:{files:File[],set:(x:File[])=>void}){return <div className="step-body"><h2>Upload project photos</h2><p>Up to 6 images. Max 5MB each.</p><label className="upload">CHOOSE PHOTOS<input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={e=>set(Array.from(e.target.files||[]).filter(x=>x.size<=5*1024*1024).slice(0,6))}/></label><div className="file-list">{files.map(x=><span key={x.name}>{x.name}</span>)}</div></div>}
+function Lightbox({index,close}:{index:number,close:()=>void}){const p=photos[index];return <div className="lightbox"><button onClick={close} className="lb-close">×</button><div className="lb-photo" style={{backgroundImage:"url('/images/yardify-portfolio.webp')",backgroundPosition:p[0]}}/><div className="lb-label">{String(index+1).padStart(2,'0')} / 06 · {p[1]}</div></div>}
