@@ -216,12 +216,12 @@ export default function MotionSystem() {
           </div>
           <div className="global-progress" aria-hidden="true" />
           <div className="floating-quote">
-            <button type="button" data-magnetic onClick={() => window.dispatchEvent(new CustomEvent('yardify:quote'))}>
+            <button type="button" data-magnetic onClick={() => document.querySelector<HTMLButtonElement>('.quote-pill')?.click()}>
               GET A FREE QUOTE <span>↗</span>
             </button>
           </div>
           <div className="mobile-cta">
-            <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('yardify:quote'))}>
+            <button type="button" onClick={() => document.querySelector<HTMLButtonElement>('.quote-pill')?.click()}>
               GET A FREE QUOTE <span>↗</span>
             </button>
           </div>
