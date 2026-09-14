@@ -24,6 +24,33 @@ export default function MotionSystem() {
     updateReduced()
     reduced.addEventListener('change', updateReduced)
 
+    // Keep every floating/mobile quote CTA connected to the single existing quote trigger.
+    const openQuote = () => {
+      const quoteButton = document.querySelector<HTMLButtonElement>('.quote-pill, [data-quote-trigger]')
+      quoteButton?.click()
+      window.requestAnimationFrame(() => {
+        const card = document.querySelector<HTMLElement>('.modal .modal-card')
+        if (card) card.scrollTop = 0
+      })
+    }
+    window.addEventListener('yardify:quote', openQuote)
+
+    // Mobile Safari can otherwise place the fixed modal's flex child below the visual viewport
+    // when the sticky CTA is present. Keep the quote experience anchored to the viewport top.
+    const quoteStyle = document.createElement('style')
+    quoteStyle.id = 'yardify-quote-modal-fix'
+    quoteStyle.textContent = `
+      .modal { position: fixed !important; inset: 0 !important; width: 100vw !important; height: 100dvh !important; min-height: 100dvh !important; display: flex !important; align-items: flex-start !important; justify-content: center !important; overflow-y: auto !important; overscroll-behavior: contain !important; padding: max(18px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom)) !important; }
+      .modal .modal-card { position: relative !important; width: min(720px, 100%) !important; max-height: calc(100dvh - max(36px, env(safe-area-inset-top) + env(safe-area-inset-bottom))) !important; margin: 0 auto !important; overflow-y: auto !important; overscroll-behavior: contain !important; }
+      .modal .close { z-index: 3 !important; }
+      @media (max-width: 900px) {
+        .modal { padding: max(12px, env(safe-area-inset-top)) 12px max(18px, env(safe-area-inset-bottom)) !important; }
+        .modal .modal-card { width: 100% !important; max-height: calc(100dvh - max(30px, env(safe-area-inset-top) + env(safe-area-inset-bottom))) !important; }
+        .modal .form-actions { position: sticky; bottom: 0; background: inherit; padding-top: 12px; }
+      }
+    `
+    document.head.appendChild(quoteStyle)
+
     let revealObserver: IntersectionObserver | null = null
     let sectionObserver: IntersectionObserver | null = null
 
@@ -194,6 +221,8 @@ export default function MotionSystem() {
       sectionObserver?.disconnect()
       window.removeEventListener('scroll', updateScroll)
       window.removeEventListener('scroll', updateParallax)
+      window.removeEventListener('yardify:quote', openQuote)
+      quoteStyle.remove()
       if (scrollRaf) cancelAnimationFrame(scrollRaf)
       if (parallaxRaf) cancelAnimationFrame(parallaxRaf)
       if (cursorRaf) cancelAnimationFrame(cursorRaf)
